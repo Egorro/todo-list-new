@@ -1,0 +1,14 @@
+<div class="filters">
+  <button [class.active]="filter() === 'all'" (click)="setFilter('all')">All</button>
+  <button [class.active]="filter() === 'active'" (click)="setFilter('active')">Active</button>
+  <button [class.active]="filter() === 'completed'" (click)="setFilter('completed')">Completed</button>
+</div>
+<ul>
+  @for (todo of todos() | todoFilter: filter(); track todo.id) {
+    <app-todo-item
+      [todo]="todo"
+      (toggle)="onToggle($event)"
+      (delete)="onDelete($event)"
+    />
+  }
+</ul>

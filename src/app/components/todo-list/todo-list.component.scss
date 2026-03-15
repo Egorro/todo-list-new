@@ -1,0 +1,15 @@
+.filters {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+
+  button.active {
+    font-weight: bold;
+  }
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}

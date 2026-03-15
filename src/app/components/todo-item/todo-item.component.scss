@@ -1,0 +1,11 @@
+li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+
+  &.completed .title {
+    text-decoration: line-through;
+    opacity: 0.6;
+  }
+}
