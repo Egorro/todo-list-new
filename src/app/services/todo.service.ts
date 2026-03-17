@@ -1,4 +1,4 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { Todo } from '../models/todo.model';
 
 @Injectable({
@@ -30,5 +30,16 @@ export class TodoService {
 
   deleteTodo(id: string): void {
     this.todosSignal.update(todos => todos.filter(t => t.id !== id));
+  }
+
+  updateTitle(id: string, newTitle: string): void {
+    const trimmedTitle = newTitle.trim();
+    if (!trimmedTitle) {
+      return;
+    }
+
+    this.todosSignal.update(todos =>
+      todos.map(t => (t.id === id ? { ...t, title: trimmedTitle } : t))
+    );
   }
 }

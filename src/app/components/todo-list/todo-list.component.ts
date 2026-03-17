@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { TodoService } from '../../services/todo.service';
 import { TodoFilterPipe, TodoFilter } from '../../pipes/todo-filter.pipe';
 import { TodoItemComponent } from '../todo-item/todo-item.component';
@@ -15,6 +15,12 @@ export class TodoListComponent {
   private todoService = inject(TodoService);
   protected filter = signal<TodoFilter>('all');
   protected todos = this.todoService.todos;
+  protected activeCount = computed(
+    () => this.todos().filter(todo => !todo.completed).length
+  );
+  protected completedCount = computed(
+    () => this.todos().filter(todo => todo.completed).length
+  );
 
   protected setFilter(f: TodoFilter): void {
     this.filter.set(f);
@@ -26,5 +32,9 @@ export class TodoListComponent {
 
   protected onDelete(todo: Todo): void {
     this.todoService.deleteTodo(todo.id);
+  }
+
+  protected onEdit(todo: Todo): void {
+    this.todoService.updateTitle(todo.id, todo.title);
   }
 }

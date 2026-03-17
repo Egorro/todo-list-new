@@ -1,4 +1,9 @@
 <form (submit)="onSubmit(); $event.preventDefault()">
-  <input #todoInput type="text" placeholder="What needs to be done?" />
+  <input
+    #todoInput
+    type="text"
+    placeholder="What needs to be done?"
+    maxlength="100"
+  />
   <button type="submit">Add</button>
 </form>

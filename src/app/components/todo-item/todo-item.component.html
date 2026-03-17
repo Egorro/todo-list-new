@@ -1,5 +1,19 @@
 <li [class.completed]="todo().completed">
   <input type="checkbox" [checked]="todo().completed" (change)="onToggle()" />
-  <span class="title">{{ todo().title }}</span>
+
+  @if (!isEditing()) {
+    <span class="title" (dblclick)="startEdit()">{{ todo().title }}</span>
+  } @else {
+    <input
+      type="text"
+      class="edit-input"
+      [value]="editTitle()"
+      (input)="onEditInput($event)"
+      (blur)="saveEdit()"
+      (keydown.enter)="saveEdit()"
+      (keydown.escape)="cancelEdit()"
+    />
+  }
+
   <button type="button" (click)="onDelete()">Delete</button>
 </li>
