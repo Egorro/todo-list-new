@@ -15,6 +15,8 @@ export class TodoListComponent {
   private todoService = inject(TodoService);
   protected filter = signal<TodoFilter>('all');
   protected todos = this.todoService.todos;
+  protected isLoading = this.todoService.isLoading;
+  protected errorMessage = this.todoService.errorMessage;
   protected activeCount = computed(
     () => this.todos().filter(todo => !todo.completed).length
   );
@@ -27,14 +29,14 @@ export class TodoListComponent {
   }
 
   protected onToggle(todo: Todo): void {
-    this.todoService.toggleTodo(todo.id);
+    void this.todoService.toggleTodo(todo.id);
   }
 
   protected onDelete(todo: Todo): void {
-    this.todoService.deleteTodo(todo.id);
+    void this.todoService.deleteTodo(todo.id);
   }
 
   protected onEdit(todo: Todo): void {
-    this.todoService.updateTitle(todo.id, todo.title);
+    void this.todoService.updateTitle(todo.id, todo.title);
   }
 }

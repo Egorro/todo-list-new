@@ -1,45 +1,40 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+
 import { Todo } from '../models/todo.model';
+import { TodoFacadeService } from './todo-facade.service';
+import { TodoFilter } from './todo-api.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TodoService {
-  private todosSignal = signal<Todo[]>([]);
-  readonly todos = this.todosSignal.asReadonly();
+  private readonly facade = inject(TodoFacadeService);
+
+  readonly todos = this.facade.todos;
+  readonly isLoading = this.facade.isLoading;
+  readonly errorMessage = this.facade.errorMessage;
 
   getTodos(): Todo[] {
-    return this.todosSignal();
+    return this.facade.getTodos();
   }
 
-  addTodo(title: string): Todo {
-    const todo: Todo = {
-      id: crypto.randomUUID(),
-      title: title.trim(),
-      completed: false
-    };
-    this.todosSignal.update(todos => [...todos, todo]);
-    return todo;
+  loadTodos(filter: TodoFilter = 'all', q = ''): Promise<void> {
+    return this.facade.loadTodos(filter, q);
   }
 
-  toggleTodo(id: string): void {
-    this.todosSignal.update(todos =>
-      todos.map(t => (t.id === id ? { ...t, completed: !t.completed } : t))
-    );
+  addTodo(title: string): Promise<Todo | null> {
+    return this.facade.addTodo(title);
   }
 
-  deleteTodo(id: string): void {
-    this.todosSignal.update(todos => todos.filter(t => t.id !== id));
+  toggleTodo(id: string): Promise<void> {
+    return this.facade.toggleTodo(id);
   }
 
-  updateTitle(id: string, newTitle: string): void {
-    const trimmedTitle = newTitle.trim();
-    if (!trimmedTitle) {
-      return;
-    }
+  deleteTodo(id: string): Promise<void> {
+    return this.facade.deleteTodo(id);
+  }
 
-    this.todosSignal.update(todos =>
-      todos.map(t => (t.id === id ? { ...t, title: trimmedTitle } : t))
-    );
+  updateTitle(id: string, newTitle: string): Promise<void> {
+    return this.facade.updateTitle(id, newTitle);
   }
 }

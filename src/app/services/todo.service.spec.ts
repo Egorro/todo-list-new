@@ -1,44 +1,57 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { signal } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+
 import { TodoService } from './todo.service';
+import { TodoFacadeService } from './todo-facade.service';
 
 describe('TodoService', () => {
   let service: TodoService;
+  let facade: {
+    todos: ReturnType<typeof signal>;
+    isLoading: ReturnType<typeof signal>;
+    errorMessage: ReturnType<typeof signal>;
+    getTodos: ReturnType<typeof vi.fn>;
+    loadTodos: ReturnType<typeof vi.fn>;
+    addTodo: ReturnType<typeof vi.fn>;
+    toggleTodo: ReturnType<typeof vi.fn>;
+    deleteTodo: ReturnType<typeof vi.fn>;
+    updateTitle: ReturnType<typeof vi.fn>;
+  };
 
   beforeEach(() => {
-    service = new TodoService();
+    facade = {
+      todos: signal([]),
+      isLoading: signal(false),
+      errorMessage: signal(null),
+      getTodos: vi.fn().mockReturnValue([]),
+      loadTodos: vi.fn().mockResolvedValue(undefined),
+      addTodo: vi.fn().mockResolvedValue(null),
+      toggleTodo: vi.fn().mockResolvedValue(undefined),
+      deleteTodo: vi.fn().mockResolvedValue(undefined),
+      updateTitle: vi.fn().mockResolvedValue(undefined)
+    };
+    TestBed.configureTestingModule({
+      providers: [
+        TodoService,
+        { provide: TodoFacadeService, useValue: facade }
+      ]
+    });
+    service = TestBed.inject(TodoService);
   });
 
-  it('should start with empty todos', () => {
-    expect(service.getTodos()).toEqual([]);
+  it('должен проксировать загрузку задач во facade', async () => {
+    await service.loadTodos('all');
+    expect(facade.loadTodos).toHaveBeenCalledWith('all', '');
   });
 
-  it('should add a todo', () => {
-    const todo = service.addTodo('Learn Angular testing');
-    expect(todo.title).toBe('Learn Angular testing');
-    expect(todo.completed).toBe(false);
-    expect(todo.id).toBeDefined();
-    expect(service.getTodos()).toHaveLength(1);
-    expect(service.getTodos()[0].title).toBe('Learn Angular testing');
+  it('должен проксировать добавление задачи во facade', async () => {
+    await service.addTodo('Тест');
+    expect(facade.addTodo).toHaveBeenCalledWith('Тест');
   });
 
-  it('should trim title when adding', () => {
-    service.addTodo('  Trimmed  ');
-    expect(service.getTodos()[0].title).toBe('Trimmed');
-  });
-
-  it('should toggle todo completed state', () => {
-    const todo = service.addTodo('Test todo');
-    expect(service.getTodos()[0].completed).toBe(false);
-    service.toggleTodo(todo.id);
-    expect(service.getTodos()[0].completed).toBe(true);
-    service.toggleTodo(todo.id);
-    expect(service.getTodos()[0].completed).toBe(false);
-  });
-
-  it('should delete a todo', () => {
-    const todo = service.addTodo('To delete');
-    expect(service.getTodos()).toHaveLength(1);
-    service.deleteTodo(todo.id);
-    expect(service.getTodos()).toHaveLength(0);
+  it('должен проксировать изменение заголовка во facade', async () => {
+    await service.updateTitle('1', 'Новое');
+    expect(facade.updateTitle).toHaveBeenCalledWith('1', 'Новое');
   });
 });

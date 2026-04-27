@@ -7,6 +7,12 @@
   <span>{{ activeCount() }} items left</span>
   <span>{{ completedCount() }} completed</span>
 </div>
+@if (isLoading()) {
+  <p>Загрузка задач...</p>
+}
+@if (errorMessage()) {
+  <p>{{ errorMessage() }}</p>
+}
 <ul>
   @for (todo of todos() | todoFilter: filter(); track todo.id) {
     <app-todo-item
