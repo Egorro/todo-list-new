@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 
 import { appConfig } from './config';
 import { TodoModule } from './todo/todo.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -10,7 +11,8 @@ import { TodoModule } from './todo/todo.module';
       isGlobal: true,
       load: [appConfig]
     }),
-    TodoModule
+    TodoModule,
+    HealthModule
   ]
 })
 export class AppModule {}
